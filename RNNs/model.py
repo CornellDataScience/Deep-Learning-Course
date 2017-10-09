@@ -70,16 +70,16 @@ class RNN(object):
 
             with tf.variable_scope('Unrolled') as scope:
                 # We need to tell TensorFlow what type of RNN cell structure to use. Here we define it as an LSTM
-                rnn_cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=cell_size)
+                rnn_cell = tf.contrib.rnn.BasicLSTMCell(num_units=cell_size)
 
                 # The state of the RNN is the "zero state" at the start of every sequence. This is the initial state
-                initial_state = state = rnn_cell.zero_state(batch_size=self._batch_size, dtype=tf.float32)
+                state = rnn_cell.zero_state(batch_size=self._batch_size, dtype=tf.float32)
 
                 # Unroll the graph num_steps back into the "past"
                 self._outputs = []  # python list of tensors so we can keep track of each timestep
                 for i in range(num_steps):  # need to unroll up to num_steps units back in time
                     if i > 0: scope.reuse_variables()  # Reuse the parameters created in the 1st RNN cell
-                    output, state = rnn_cell(self._hot[:, i, :])  # Step the RNN through the sequence
+                    output, state = rnn_cell(self._hot[:, i, :], state)  # Step the RNN through the sequence
                     self._outputs.append(output)
 
                 final_output = self._outputs[-1]  # Get the last output as the final result of the RNN
