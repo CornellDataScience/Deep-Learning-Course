@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import os
 import tensorflow as tf
+import numpy as np
 
 from time import time, strftime
 
@@ -125,7 +126,8 @@ class RNN(object):
                     self._sess.run(tf.global_variables_initializer())
                     print("Model Initialized!")
 
-    def train(self, x_train, y_train, lengths_train=None, num_epochs=1000, progress_info=True, progress_interval=5):
+    def train(self, x_train, y_train, lengths_train=None, num_epochs=1000,  batch_size=None, progress_info=True,
+              progress_interval=5):
         """Trains the model on a given dataset.
         Because the loss is averaged over batch, a larger batch size will result in a more stable loss function with
         potentially better results when applying the model, although having a smaller batch size means less memory
@@ -143,12 +145,13 @@ class RNN(object):
                 complete. If all your data fits in memory and you don't need to mini-batch, then this should be a large
                 number (>=1000). Otherwise keep this small (<50) so the model doesn't become skewed by the small size of
                 the provided mini-batch too quickly. It is expected that the code that selects the batch size will
-                call this train method once with each new batch (or just once if mini-batching is not necessary)
+                call this train method once with each new batch (or just once if mini-batching is not necessary).
+            batch_size:  The size of the mini-batch to use during training. If None, uses entire dataset as the batch.
             progress_info:  If true, print what the current loss and percent completion over the course of training.
             progress_interval:  How many seconds to wait to print the next progress update, if `progress_info` is True.
 
         Returns:
-            The loss value after training
+            The loss value after training.
         """
         with self._sess.as_default():
 
@@ -156,22 +159,41 @@ class RNN(object):
 
             fetches = (self._train_step, self._loss)  # These are the tensors/operations we want TensorFlow to perform
 
+            num_samples = x_train.shape[0]
+            if num_samples is not y_train.shape[0] or num_samples is not lengths_train.shape[0]:
+                raise ValueError("Sample size is not consistent. Ensure all inputs have same number of samples")
+
+            if batch_size is None: batch_size = num_samples
+            if batch_size > num_samples:
+                raise ValueError("Batch size cannot exceed the number of samples!")
+
             # Training loop for the given batch
             for epoch in range(num_epochs):
-                # Feed the data into the graph and run one training step. Returned are the results of `fetches`
-                _, loss_val = self._sess.run(fetches)
 
-                current_time = time()
-                if (current_time - self._last_time) >= progress_interval:  # Print progress every set number of seconds
-                    self._last_time = current_time
-                    self._needs_update = True
-                else:
-                    self._needs_update = False
+                shuffle = np.random.permutation(num_samples)  # Each epoch, randomly shuffle indices
+                for i in range(0, num_samples, batch_size):
+                    indices = shuffle[i:i+batch_size]  # Indices to use for batch
+                    x_batch = x_train[indices]
+                    y_batch = y_train[indices]
+                    lengths_batch = lengths_train[indices]
 
-                if progress_info and self._needs_update:  # Only print progress when needed
-                    print("Current Loss Value: %.10f, Percent Complete: %.4f" % (loss_val, epoch / num_epochs * 100))
+                    # Feed the data into the graph and run one training step. Returned are the results of `fetches`
+                    _, loss_val = self._sess.run(
+                        fetches,
+                        feed_dict={self._x: x_batch, self._y: y_batch, self._lengths: lengths_batch})
 
-                self._iter_count += 1
+                    current_time = time()
+                    if (current_time - self._last_time) >= progress_interval:  # Print progress every few seconds
+                        self._last_time = current_time
+                        self._needs_update = True
+                    else:
+                        self._needs_update = False
+
+                    if progress_info and self._needs_update:  # Only print progress when needed
+                        print("Current Loss Value: %.10f, Percent Complete: %.4f"
+                              % (loss_val, (epoch*num_samples+i) / (num_epochs*num_samples) * 100))
+
+                    self._iter_count += 1
 
             if progress_info: print("Completed Training.")
         return loss_val
