@@ -1,2 +1,2 @@
-model_checkpoint_path: "fcn-trained2.ckpt"
-all_model_checkpoint_paths: "fcn-trained2.ckpt"
+model_checkpoint_path: "fcn-trained3.ckpt"
+all_model_checkpoint_paths: "fcn-trained3.ckpt"

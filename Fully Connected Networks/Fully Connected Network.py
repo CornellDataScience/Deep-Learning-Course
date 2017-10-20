@@ -5,7 +5,6 @@
 
 # In[1]:
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -15,7 +14,6 @@ from __future__ import print_function
 
 # In[2]:
 
-
 import tensorflow as tf
 import numpy as np
 
@@ -23,7 +21,6 @@ import numpy as np
 # We must import the TensorFlow and numpy packages to be able to use them! We use the prefix "tf" to avoid having to type out the full name every time we want to use a TensorFlow command. Likewise, we prefix all numpy commands with "np".
 
 # In[3]:
-
 
 seed = 1337
 tf.set_random_seed(seed)  # Tell TensorFlow to use our seed
@@ -33,7 +30,6 @@ np.random.seed(seed)      # Tell NumPy to use our seed
 # ## Loading CIFAR-10 Dataset
 
 # In[4]:
-
 
 import sys
 def unpickle(file):
@@ -50,7 +46,6 @@ def unpickle(file):
 
 # In[5]:
 
-
 dataset = unpickle('../cifar-10-data')
 dataset.keys()
 
@@ -58,7 +53,6 @@ dataset.keys()
 # We see that the data is stored in a dictionary (a data structure in Python). We are interested in the labels and the data.
 
 # In[6]:
-
 
 dataset[b'data'].shape
 
@@ -68,12 +62,11 @@ dataset[b'data'].shape
 
 # In[7]:
 
-
 import matplotlib.pyplot as plt
+#get_ipython().magic(u'matplotlib inline')
 
 
 # In[8]:
-
 
 # pick a random number between 0 and 9999
 random = 12
@@ -83,14 +76,12 @@ plt.imshow(img);
 
 # In[9]:
 
-
 print(dataset[b'labels'][:100])
 
 
 # These are the first 100 labels - they are stored as a list of numbers between 0 and 9, where each number corresponds to a class.
 
 # In[10]:
-
 
 label_names = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
 label_names[dataset[b'labels'][random]]
@@ -102,7 +93,6 @@ label_names[dataset[b'labels'][random]]
 
 # In[11]:
 
-
 x_data = np.array(dataset[b'data'])    # The training images
 y_data = np.array(dataset[b'labels'])  # The labels for the training images
 print("x_data shape:", x_data.shape)
@@ -110,7 +100,6 @@ print("y_data shape:", y_data.shape)
 
 
 # In[12]:
-
 
 n_samples = x_data.shape[0]
 indices = np.random.permutation(n_samples)
@@ -134,7 +123,6 @@ print("y_test shape:", y_test.shape)
 
 # In[13]:
 
-
 input_length = 3072
 num_classes = 10
 
@@ -153,7 +141,6 @@ num_classes = 10
 # **In summary: Always keep your code organized and safe from sneaky bugs by using `tf.variable_scope()`, and always use `tf.get_variable()` instead of `tf.Variable()`.**
 
 # In[14]:
-
 
 def fc(input_tensor, output_features, name='FC', func=tf.nn.relu):
     """Creates a Fully Connected Layer
@@ -181,8 +168,7 @@ def fc(input_tensor, output_features, name='FC', func=tf.nn.relu):
 
 # Here, we declare all our inputs, outputs, and parameters.
 
-# In[15]:
-
+# In[36]:
 
 tf.reset_default_graph()  # Clear the graph to avoid errors from reusing variables
 
@@ -212,13 +198,13 @@ with tf.variable_scope('Optimization'):
     loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=scores))
     
     regularizer = (tf.nn.l2_loss(w1) + tf.nn.l2_loss(w2) + tf.nn.l2_loss(w3) + tf.nn.l2_loss(w))  # L2 Regularizer
-    lmbda = 0.04  # Regularizer coefficient
+    lmbda = 0.5  # Regularizer coefficient
     loss += lmbda*regularizer  # Add regularization penalty to the loss function
     
     correct = tf.equal(tf.argmax(pred, axis=1), y)           # boolean 1-D Tensor of if pred was correct
     accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))  # scalar (0-D) Tensor of the average accuracy
     
-    train_step = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)  # Op that steps loss towards minimum
+    train_step = tf.train.AdamOptimizer(learning_rate=0.000005).minimize(loss)  # Op that steps loss towards minimum
     
 init = tf.global_variables_initializer()  # Op that initializes variables
 
@@ -228,8 +214,7 @@ init = tf.global_variables_initializer()  # Op that initializes variables
 # 
 # *Side note: When using the whole dataset in a batch, it is called "Gradient Descent". When using a subset of the dataset in the batch, this is called "Mini-Batch Gradient Descent". When the batch size is set to 1, it is called "Stochastic Gradient Descent". People mix up these terms, so if you hear someone saying "use SGD", they probably are referring to Mini-Batch Gradient Descent rather than Stochastic Gradient Descent. Even in academic papers, people confuse these!*
 
-# In[ ]:
-
+# In[38]:
 
 sess = tf.InteractiveSession()
 sess.run(init)  # Initialize all `tf.Variable` objects
@@ -237,57 +222,38 @@ sess.run(init)  # Initialize all `tf.Variable` objects
 
 # In[ ]:
 
+model_name = 'fcn-trained3.ckpt'
 
-model_name = 'fcn-trained2.ckpt'
-
-#n_epochs = 500     # The number of full passes through the dataset before we quit training
+n_epochs = 1000     # The number of full passes through the dataset before we quit training
 batch_size= 256  # Feed in only 256 images in a single batch instead of all 9,000
 
 training_size = x_train.shape[0]
 
-saver = tf.train.Saver() # Allows us to save a model
+saver = tf.train.Saver() # Allows us to save and restore a model
 saver.restore(sess, model_name)
 
 import atexit
 atexit.register(saver.save, sess, model_name)
 
-#for j in range(n_epochs):
 import itertools
-try:
-    for j in itertools.count():
-        perm = np.random.permutation(training_size)  # Every epoch, get a new set of batches
-        for i in range(0, training_size, batch_size):
-            idx = perm[i:i+batch_size]  # Select indices for batch
-            x_batch = x_train[idx]
-            y_batch = y_train[idx]
-            sess.run(train_step, feed_dict={x:x_batch, y:y_batch})
-        if j%50 == 49 or j==0:
-            l, r, a = sess.run([loss, regularizer, accuracy], feed_dict={x:x_train, y:y_train})
-            print("epoch %6d, loss=%6f, regularizer=%0.4f, accuracy=%.2f%%" % (j+1, l, round(r, 4), 100*round(a, 4)))
-except KeyboardInterrupt:
-    pass # Continue    
-
-# In[ ]:
+for j in itertools.count():
+    perm = np.random.permutation(training_size)  # Every epoch, get a new set of batches
+    for i in range(0, training_size, batch_size):
+        idx = perm[i:i+batch_size]  # Select indices for batch
+        x_batch = x_train[idx]
+        y_batch = y_train[idx]
+        sess.run(train_step, feed_dict={x:x_batch, y:y_batch})
+    if j%50 == 49 or j==0:
+        l, r, a = sess.run([loss, regularizer, accuracy], feed_dict={x:x_train, y:y_train})
+        print("epoch %6d, loss=%6f, regularizer=%0.4f, accuracy=%.2f%%" % (j+1, l, round(r, 4), 100*round(a, 4)))
 
 
+# In[18]:
 
 
 # Generate some predictions!
 
-# In[ ]:
-
-
-# pick a random image from our test set (1000 images)
-random = 65
-sample = x_test[random]
-plt.imshow(sample.reshape(3,32,32).transpose(1,2,0));
-plt.title('Selected Image')
-
-print('Prediction:', label_names[sess.run(tf.argmax(pred, axis=1), feed_dict={x:[sample]})[0]])
-
-
-# In[ ]:
-
+# In[19]:
 
 print('Training Accuracy:', sess.run(accuracy, feed_dict={x:x_train, y:y_train}))
 print('Testing Accuracy:', sess.run(accuracy, feed_dict={x:x_test, y:y_test}))
