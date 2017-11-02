@@ -100,17 +100,24 @@ with tf.Graph().as_default():
 
         saver = tf.train.Saver()
 
-        sess.run(tf.global_variables_initializer())
+        try:
+            saver.restore(sess, save_path)
+            print("Restored Model!")
+        except Exception:
+            print("Initializing Model!")
+            sess.run(tf.global_variables_initializer())
 
         try:
-            count = 0
+            num_batches = training_size // batch_size
             for epoch in range(num_epochs):
                 perm = np.random.permutation(training_size)  # Every epoch, get a new set of batches
+                avg_loss = 0
                 for i in range(0, training_size, batch_size):
                     idx = perm[i:i + batch_size]  # Select indices for batch
                     x_batch = alice_train[idx]
                     _, batch_loss = sess.run([train_step, loss], feed_dict={x: x_batch})
-                print("epoch %6d, loss=%6f" % (epoch + 1, batch_loss))
+                    avg_loss += batch_loss
+                print("epoch %6d, loss=%6f" % (epoch + 1, avg_loss/num_batches))
         except SystemExit as e:
             print("Interrupted Training! Saving model to %s" % save_path)
             # Save model here
