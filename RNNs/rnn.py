@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import sys
 
 save_path = "saved/rnn.ckpt"
 alice_file = "alice_with_periods.npz"
@@ -92,7 +93,7 @@ with tf.Graph().as_default():
     train_step = tf.train.AdamOptimizer(learning_rate=0.01).minimize(loss)
 
     with tf.Session().as_default() as sess:
-        num_epochs = 10000  # number of training epochs
+        num_epochs = sys.maxsize  # number of training epochs
         batch_size = 32
 
         training_size = alice_train.shape[0]
