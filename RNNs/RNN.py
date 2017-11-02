@@ -1,9 +1,4 @@
-# Attempt at vanilla-rnn from scratch on tensorflow
-# Shubhom Bhattacharya
 import tensorflow as tf
-import pandas as pd
-import nltk
-from nltk import word_tokenize
 import numpy as np
 
 seed = 31337
