@@ -1,9 +1,6 @@
 .idea/
 __pycache__/
 *.pyc
-Fully Connected Networks/.ipynb_checkpoints/Fully Connected Network-checkpoint.ipynb
+Fully Connected Networks/.ipynb_checkpoints/*
 Fully Connected Networks/data_batch_1
-.ipynb_checkpoints/TensorFlow Tutorial-checkpoint.ipynb
-Fully Connected Networks/.ipynb_checkpoints/Fully Connected Network-checkpoint.ipynb
-Fully Connected Networks/.ipynb_checkpoints/Fully Connected Network-checkpoint.ipynb
-Fully Connected Networks/.ipynb_checkpoints/Fully Connected Network-checkpoint.ipynb
+.ipynb_checkpoints/*
