@@ -2,5 +2,6 @@
 __pycache__/
 *.pyc
 *.swp
-*/.ipynb_checkpoints/*
-RNNs/alice_arrays.npz
+*/.ipynb_checkpoints/
+RNNs/saved/
+RNNs/alice_with_periods.npz
