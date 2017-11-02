@@ -3,5 +3,4 @@ __pycache__/
 *.pyc
 *.swp
 */.ipynb_checkpoints/*
-Fully Connected Networks/data_batch_1
 RNNs/alice_arrays.npz
