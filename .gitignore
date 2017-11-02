@@ -1,6 +1,7 @@
 .idea/
 __pycache__/
 *.pyc
-Fully Connected Networks/.ipynb_checkpoints/*
+*.swp
+*/.ipynb_checkpoints/*
 Fully Connected Networks/data_batch_1
-.ipynb_checkpoints/*
+RNNs/alice_arrays.npz
