@@ -9,17 +9,17 @@ import time
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
-mnist = input_data.read_data_sets('../data/')
+mnist = input_data.read_data_sets('../data/', one_hot=True)
 
 
 def weight_variable(shape):
     w_init = tf.truncated_normal(shape, stddev=0.01)
-    return tf.get_variable('w', shape=shape, initializer=w_init)
+    return tf.get_variable('w', initializer=w_init)
 
 
 def bias_variable(shape):
     b_init = tf.constant(0.0, shape=shape)
-    return tf.get_variable('b', shape=shape, initializer=b_init)
+    return tf.get_variable('b', initializer=b_init)
 
 
 with tf.variable_scope('inputs'):
@@ -47,55 +47,56 @@ with tf.variable_scope('fc2'):
 with tf.variable_scope('softmax'):
     W_fc3 = weight_variable([1200, 10])
     b_fc3 = bias_variable([10])
-    y = tf.nn.softmax(tf.matmul(h_fc2_drop, W_fc3) + b_fc3)
+    preds = tf.nn.softmax(tf.matmul(h_fc2_drop, W_fc3) + b_fc3)
 
 with tf.variable_scope('optimization'):
     # define the loss function
-    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y * tf.log(y), reduction_indices=[1]))
+    cross_entropy = tf.reduce_mean(-tf.reduce_sum(y * tf.log(preds), reduction_indices=[1]))
     
     # define training step and accuracy
     train_step = tf.train.MomentumOptimizer(learning_rate=0.1, momentum=0.9).minimize(cross_entropy)
-    correct = tf.equal(tf.argmax(y, 1), tf.argmax(y, 1))
+    correct = tf.equal(tf.argmax(preds, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
 
 # create a saver
 saver = tf.train.Saver()
 save_path = '../models/mnist_fc'
 
-# initialize the graph
+# operation to initialize the graph (i.e. all variables)
 init = tf.global_variables_initializer()
-sess = tf.Session()
-sess.run(init)
 
-# train
-batch_size = 100
-print('Starting training...')
-start_time = time.time()
-best_accuracy = 0
+with tf.Session() as sess:
 
-for i in range(10000):
-    x_train, y_train = mnist.train.next_batch(batch_size)
-    if (i + 1) % 1000 == 0:
-        train_accuracy = sess.run(accuracy, feed_dict={x: x_train, y: y_train, prob_i: 1.0, prob_fc: 1.0})
-        print("step %d, training accuracy %g" % (i, train_accuracy))
+    batch_size = 100
+    print('Starting training...')
+    start_time = time.time()
+    best_accuracy = 0
+    sess.run(init)
 
-        # validate
-        val_accuracy = sess.run(accuracy, feed_dict={x: mnist.validation.images, y: mnist.validation.labels,
-                                                     prob_i: 1.0, prob_fc: 1.0})
-        if val_accuracy > best_accuracy:
-            saver.save(sess, save_path)
-            best_accuracy = val_accuracy
-            print("Validation accuracy improved: %g. Saving the network." % val_accuracy)
-        else:
-            saver.restore(sess, save_path)
-            print("Validation accuracy was: %g. Previous accuracy: %g. " % (val_accuracy, best_accuracy) +
-                  "Using old parameters for further optimizations.")
+    for i in range(10000):
+        x_train, y_train = mnist.train.next_batch(batch_size)
+        if (i + 1) % 1000 == 0:
+            train_accuracy = sess.run(accuracy, feed_dict={x: x_train, y: y_train, prob_i: 1.0, prob_fc: 1.0})
+            print("step %d, training accuracy %g" % (i, train_accuracy))
 
-    # run training step (note dropout hyperparameters)
-    sess.run(train_step, feed_dict={x: x_train, y: y_train, prob_i: 0.8, prob_fc: 0.5})
+            # validate
+            val_accuracy = sess.run(accuracy, feed_dict={x: mnist.validation.images, y: mnist.validation.labels,
+                                                         prob_i: 1.0, prob_fc: 1.0})
+            if val_accuracy > best_accuracy:
+                saver.save(sess, save_path)
+                best_accuracy = val_accuracy
+                print("Validation accuracy improved: %g. Saving the network." % val_accuracy)
+            else:
+                saver.restore(sess, save_path)
+                print("Validation accuracy was: %g. Previous accuracy: %g. " % (val_accuracy, best_accuracy) +
+                      "Using old parameters for further optimizations.")
 
-print("Training took %.4f seconds." % (time.time() - start_time))
+        # run training step (note dropout hyperparameters)
+        sess.run(train_step, feed_dict={x: x_train, y: y_train, prob_i: 0.8, prob_fc: 0.5})
 
-# test
-test_accuracy = sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, prob_i: 1.0, prob_fc: 1.0})
-print("Best test accuracy: %g" % best_accuracy)
+    print("Training took %.4f seconds." % (time.time() - start_time))
+
+    # test
+    test_accuracy = sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels,
+                                                  prob_i: 1.0, prob_fc: 1.0})
+    print("Best test accuracy: %g" % best_accuracy)
