@@ -12,7 +12,7 @@ vocab_size = len(unique_chars)
 char2idx = dict(zip(unique_chars, range(vocab_size)))
 
 
-def pre_process(num_steps):
+def pre_process(num_steps, batch_size):
     data = ([], [])
     print('Pre-processing training data...')
     start_time = time.time()
@@ -27,7 +27,7 @@ def pre_process(num_steps):
     data = (np.array(data[0], dtype=int), np.array(data[1], dtype=int))
     data = np.hstack(data)
     n = data.shape[0]
-    data_train, data_validate, data_test = np.split(data, [n - 100, n - 50])
+    data_train, data_validate, data_test = np.split(data, [n - 2*batch_size, n - batch_size])
     x_val, y_val = data_validate[:, :num_steps], data_validate[:, num_steps:]
     x_test, y_test = data_test[:, :num_steps], data_test[:, num_steps:]
     return data_train, x_val, y_val, x_test, y_test
@@ -39,8 +39,8 @@ def build_graph(cell_type=None, state_size=100, num_classes=vocab_size, batch_si
     graph = {'batch_size': batch_size}
     tf.reset_default_graph()
 
-    graph['x'] = tf.placeholder(tf.int32, [batch_size, num_steps], name='input_placeholder')
-    graph['y'] = tf.placeholder(tf.int32, [batch_size, num_steps], name='labels_placeholder')
+    graph['x'] = tf.placeholder(tf.int64, [batch_size, num_steps], name='input_placeholder')
+    graph['y'] = tf.placeholder(tf.int64, [batch_size, num_steps], name='labels_placeholder')
 
     embeddings = tf.get_variable('embedding_matrix', [num_classes, state_size])
     rnn_inputs = tf.nn.embedding_lookup(embeddings, graph['x'])
@@ -62,14 +62,14 @@ def build_graph(cell_type=None, state_size=100, num_classes=vocab_size, batch_si
 
     # reshape rnn_outputs and y
     rnn_outputs = tf.reshape(rnn_outputs, [-1, state_size])
-    y_reshaped = tf.reshape(y, [-1])
+    y_reshaped = tf.reshape(graph['y'], [-1])
 
     logits = tf.matmul(rnn_outputs, W) + b
     graph['predictions'] = tf.nn.softmax(logits)
-    correct = tf.equal(tf.argmax(graph['predictions'], 1), graph['y'])
+    correct = tf.equal(tf.argmax(graph['predictions'], 1), y_reshaped)
     graph['accuracy'] = tf.reduce_mean(tf.cast(correct, tf.float32))
 
-    graph['total_loss'] = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits, y_reshaped))
+    graph['total_loss'] = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_reshaped))
     graph['train_step'] = tf.train.AdamOptimizer(learning_rate).minimize(graph['total_loss'])
     graph['saver'] = tf.train.Saver()
 
@@ -81,7 +81,7 @@ def main(num_steps):
     x, y, train_step, saver, batch_size, accuracy, saver = \
         g['x'], g['y'], g['train_step'], g['saver'], g['batch_size'], g['accuracy'], g['saver']
 
-    data_train, x_val, y_val, x_test, y_test = pre_process(num_steps)
+    data_train, x_val, y_val, x_test, y_test = pre_process(num_steps, batch_size)
     init = tf.global_variables_initializer()
 
     with tf.Session() as sess:
@@ -109,3 +109,7 @@ def main(num_steps):
         print('Training complete in {:.2f}s'.format(time.time() - start_time))
         test_accuracy = sess.run(accuracy, feed_dict={x: x_test, y: y_test})
         print('Best test accuracy: {:.2f}%'.format(100 * test_accuracy))
+
+
+if __name__ == '__main__':
+    main(num_steps=80)
