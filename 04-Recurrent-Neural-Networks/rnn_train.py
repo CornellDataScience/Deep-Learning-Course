@@ -92,5 +92,10 @@ with tf.Session() as sess:
             x_batch, y_batch = data_train[start:end, :num_steps], data_train[start:end, num_steps:]
             sess.run(train_step, feed_dict={x: x_batch, y: y_batch})
         val_accuracy = sess.run(accuracy, feed_dict={x: x_val, y: y_val})
-        print(val_accuracy)
-        saver.save(sess, save_dir)
+        print('Validation accuracy:', val_accuracy)
+        if val_accuracy > best_accuracy:
+            saver.save(sess, save_dir)
+            print('Saving model...')
+        else:
+            saver.restore(sess, save_dir)
+            print('Previous accuracy: {}, restoring model...'.format(best_accuracy))
