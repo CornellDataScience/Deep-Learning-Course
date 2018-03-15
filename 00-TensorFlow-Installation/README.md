@@ -18,7 +18,7 @@ commonly used in data science.
 and Download the Python 3.6 version for your operating system.
 ![Anaconda](../images/anaconda3.png)
 
-2. Find the downloaded files (probably your Downloads folder)
+2. Find the downloaded files (probably in your Downloads folder)
     
 **Mac**: Double click the `.pkg` file  
 **Windows**: Double click the `.exe` file  
