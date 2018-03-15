@@ -3,5 +3,3 @@ __pycache__/
 *.pyc
 *.swp
 */.ipynb_checkpoints/
-RNNs/saved/
-RNNs/alice_with_periods.npz
