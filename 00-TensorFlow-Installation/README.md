@@ -44,27 +44,39 @@ than an error), you are good to go!
 Git is a version control system - GitHub is a website that hosts
 version control services, and it is where we keep all course material.
 
-**Mac**: To find out if you already have git installed, open
+**Mac**:   
+* To find out if you already have git installed, open
 a terminal and type `git -- version`. If you see `git version x.x`,
-then you already have git.   
-Run `git clone https://github.com/CornellDataScience/Deep-Learning-Course.git`
-to clone all course material.  
-If you do not already have git, download the latest 
+then you already have git.  
+1. If you do not already have git, download the latest 
 [Git for Mac installer](https://sourceforge.net/projects/git-osx-installer/files/)
-and follow the prompts. When complete, run the clone command given above.
+and follow the installation prompts.   
+2. Run `git clone https://github.com/CornellDataScience/Deep-Learning-Course.git`
+to download all course material.  
+ When complete, run the clone command given above.
   
 **Windows**:  
+* To find out if you already have git installed, open a command prompt
+(by going to `Windows -> cmd -> run`) and type in `git --version`.  
+If you see `git version x.x`, you already have git.  
+
 (Option 1 - easier but less flexible)  
-Install [GitHub Desktop](https://desktop.github.com/). Once you have
-it installed, select "Clone a Repository" and paste in this link:
+1. Install [GitHub Desktop](https://desktop.github.com/)
+2. Go to `File -> Clone a Repository` and paste in this link:
 `https://github.com/CornellDataScience/Deep-Learning-Course.git`
 
-(Option 2 - harder but more advanced)
+(Option 2 - slightly harder but more flexible)  
+1. Download the latest [Git for Windows installer](https://gitforwindows.org/),
+and follow the installation prompts.
+2. Open a command prompt, and run `git clone https://github.com/CornellDataScience/Deep-Learning-Course.git`
+to download all course material.
 
 
 
-**Linux**: In the terminal, run `sudo apt-get install git`  
-Then `git clone https://github.com/CornellDataScience/Deep-Learning-Course.git`
+**Linux**: 
+1. In the terminal, run `sudo apt-get install git` 
+(you will be prompted for your password) 
+2. Then run `git clone https://github.com/CornellDataScience/Deep-Learning-Course.git`
 
 
 Alternatively, you may choose to download all materials in a zip
@@ -79,7 +91,7 @@ material is updated!
 Open a terminal (**Mac/Linux**) or the Anaconda prompt
  (**Windows/Mac**)and type: 
 ```bash
-pip install --ignore-installed --upgrade tensorflow `
+pip install --ignore-installed --upgrade tensorflow
 ```
 If you have a GPU, use:
 ```bash
