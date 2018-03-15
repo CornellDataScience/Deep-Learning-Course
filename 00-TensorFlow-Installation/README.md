@@ -56,9 +56,11 @@ and follow the prompts. When complete, run the clone command given above.
 **Windows**:  
 (Option 1 - easier but less flexible)  
 Install [GitHub Desktop](https://desktop.github.com/). Once you have
-it installed, 
+it installed, select "Clone a Repository" and paste in this link:
+`https://github.com/CornellDataScience/Deep-Learning-Course.git`
 
 (Option 2 - harder but more advanced)
+
 
 
 **Linux**: In the terminal, run `sudo apt-get install git`  
@@ -72,4 +74,29 @@ that you will have to download a new zip file every time course
 material is updated!
 
 
-## Installing TensorFlow 
+## Installing TensorFlow
+
+Open a terminal (**Mac/Linux**) or the Anaconda prompt
+ (**Windows/Mac**)and type: 
+```bash
+pip install --ignore-installed --upgrade tensorflow `
+```
+If you have a GPU, use:
+```bash
+pip install --ignore-installed --upgrade tensorflow-gpu 
+``` 
+To validate your installation, invoke python from your shell by typing:
+```bash
+python
+```
+Type the following short program line-by-line into your shell:
+```python
+import tensorflow as tf
+hello = tf.constant('Hello, TensorFlow!')
+sess = tf.Session()
+print(sess.run(hello))
+```
+This should output:
+```
+Hello, TensorFlow!
+```
