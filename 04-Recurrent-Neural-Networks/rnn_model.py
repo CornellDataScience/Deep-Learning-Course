@@ -17,7 +17,7 @@ class RNN:
             args.batch_size = 1
             args.seq_length = 1
 
-        cell_fn = rnn.GRUcell
+        cell_fn = rnn.GRUCell
         cells = []
         for _ in range(args.num_layers):
             cell = cell_fn(args.rnn_size)
