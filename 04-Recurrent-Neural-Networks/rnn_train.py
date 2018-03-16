@@ -31,6 +31,7 @@ def train(args):
         pickle.dump((data.chars, data.vocab), f)
 
     # instantiate and train RNN model
+    print('Instantiating model...')
     model = RNN(args)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -40,6 +41,7 @@ def train(args):
         if args.load_from is not None:
             saver.restore(sess, ckpt.model_checkpoint_path)
 
+        print('Starting training...')
         for ep in range(args.num_epochs):
             # decreasing learning rate
             sess.run(tf.assign(model.learning_rate, args.learning_rate * (args.decay_rate ** ep)))
@@ -94,8 +96,12 @@ class Loader:
         self.x_batches, self.y_batches = None, None
         self.pointer = 0
 
+        self.pre_process()
+        self.create_batches()
+
     def pre_process(self):
         """pre-process data"""
+        print('Pre-processing data...')
         with open(self.data_path, 'r') as f:
             data = f.read()
         counter = collections.Counter(data)                         # count occurences of each character in data
