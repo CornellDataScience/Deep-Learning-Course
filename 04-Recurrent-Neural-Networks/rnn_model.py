@@ -70,11 +70,11 @@ class RNN:
         """Generate predictions from RNN.
 
         Args:
-            sess (tf.Session): a tensorflow session containing the RNN graph from which to generate predictions
-            chars (dict):      a dictionary mapping indices to characters (e.g. {1: 'a', 2: 'b'})
-            vocab (dict):      a dictionary mapping characters to indices; inverse of chars (e.g. {'a': 1, 'b': 2})
-            num (int):         length of string to generate (not including prompt)
-            prompt (str):      prompt to start generation (i.e. beginning of predicted text)
+            sess (tf.Session): A tensorflow session containing the RNN graph from which to generate predictions
+            chars (dict):      A dictionary mapping indices to characters (e.g. {1: 'a', 2: 'b'})
+            vocab (dict):      A dictionary mapping characters to indices; inverse of chars (e.g. {'a': 1, 'b': 2})
+            num (int):         Length of string to generate (not including prompt)
+            prompt (str):      Prompt to start generation (i.e. beginning of predicted text)
 
         Returns:
             str:               RNN-generated text
