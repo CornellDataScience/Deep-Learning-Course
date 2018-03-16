@@ -51,19 +51,20 @@ def train(args):
                 start = time.time()
                 x, y = data.next_batch()
                 feed = {model.input_data: x, model.targets: y}
-                for j, (c, h) in enumerate(model.initial_state):
-                    feed[c] = state[j].c
-                    feed[h] = state[j].h
+
+                # assign initial state from previous time step
+                for j in range(len(state)):
+                    feed[model.initial_state[j]] = state[j]
 
                 loss, state, _ = sess.run([model.cost, model.final_state, model.train_op], feed)
                 end = time.time()
                 print('{}/{} (epoch {}), train_loss={:.3f}, time/batch={:.3f}'
                       .format(ep * data.n_batches + i, args.num_epochs * data.n_batches, ep, loss, end - start))
 
-                # save model
-                checkpoint_path = os.path.join(args.save_dir, 'model.ckpt')
-                saver.save(sess, checkpoint_path, global_step=ep * data.n_batches + i)
-                print("model saved to {}".format(checkpoint_path))
+            # save model
+            checkpoint_path = os.path.join(args.save_dir, 'model.ckpt')
+            saver.save(sess, checkpoint_path, global_step=ep * data.n_batches + i)
+            print("model saved to {}".format(checkpoint_path))
 
 
 class Loader:

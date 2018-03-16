@@ -18,12 +18,9 @@ class RNN:
             args.seq_length = 1
 
         cell_fn = rnn.GRUCell
-        cells = []
-        for _ in range(args.num_layers):
-            cell = cell_fn(args.rnn_size)
-            cells.append(cell)
+        cells = [cell_fn(args.rnn_size) for _ in range(args.num_layers)]
 
-        self.cell = rnn.MultiRNNCell(cells, state_is_tuple=True)
+        self.cell = cell = rnn.MultiRNNCell(cells, state_is_tuple=True)
         self.input_data = tf.placeholder(tf.int32, [args.batch_size, args.seq_length])
         self.targets = tf.placeholder(tf.int32, [args.batch_size, args.seq_length])
         self.initial_state = cell.zero_state(args.batch_size, tf.float32)
