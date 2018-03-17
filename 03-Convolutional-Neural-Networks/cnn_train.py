@@ -29,7 +29,7 @@ def train(args):
     print('Initializing model...')
     images = tf.placeholder(tf.float32, [None, 32, 32, 3], 'input_images')
     distorted = distort_images(images)
-    model = CNN(distorted)
+    model = CNN(distorted, learning_rate=args.learning_rate)
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -132,6 +132,7 @@ def parse_arguments(argv):
     parser.add_argument('--save_dir', type=str, default='../models/cnn/', help='directory to save trained models.')
     parser.add_argument('--batch_size', type=int, default=100, help='mini-batch size.')
     parser.add_argument('--num_epochs', type=int, default=100, help='number of epochs')
+    parser.add_argument('--learning_rate', type=float, default=0.001, help='learning rate for Adam optimizer.')
     args = parser.parse_args(argv)
     return args
 
