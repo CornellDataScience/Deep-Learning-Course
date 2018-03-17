@@ -54,13 +54,18 @@ def train(args):
 class CIFAR10:
     """Object representing dataset"""
     def __init__(self, batch_size, files):
-        self.files = files
         self.batch_size = batch_size
         self.images, self.labels = None, None
 
         self.n_batches = 0
         self.x_batches, self.y_batches = None, None
         self.pointer = 0
+
+        if files is None:
+            download_cifar('../data/')
+            self.files = TRAIN_FILES
+        else:
+            self.files = files
 
         self.pre_process()
         self.create_batches()
