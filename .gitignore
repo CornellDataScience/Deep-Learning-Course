@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 *.swp
 */.ipynb_checkpoints/
+data/cifar-10-binary.tar.gz
+data/cifar-10-batches-bin/
