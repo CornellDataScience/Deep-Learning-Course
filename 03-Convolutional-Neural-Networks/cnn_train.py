@@ -41,7 +41,7 @@ def train(args):
             for i in range(data.n_batches):
                 start = time.time()
                 x, y = data.next_batch()
-                loss, acc = sess.run([model.loss, model.accuracy], feed_dict={images: x, model.labels: y})
+                loss, _ = sess.run([model.loss, model.train_step], feed_dict={images: x, model.labels: y})
                 end = time.time()
                 print('{}/{} (epoch {}), train_loss={:.3f}, time/batch={:.3f}'
                       .format(n * data.n_batches + i, args.num_epochs * data.n_batches, n, loss, end - start))
