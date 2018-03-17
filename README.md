@@ -27,5 +27,5 @@ section.
 ## About 
 Authors: [Yuji Akimoto](https://github.com/yujiakimoto) (CS '19), [Ryan Butler](https://github.com/TheButlah/) (CS '19)
   
-Course material is heavily inspired by the [CS231n](http://cs231n.github.io/) course at Stanford University.  
+Course material is inspired by the [CS231n](http://cs231n.github.io/) course at Stanford University and the [tutorials](https://github.com/Hvass-Labs/TensorFlow-Tutorials) by Hvass-Labs.  
 All material is distributed under the [MIT License](https://github.com/CornellDataScience/Deep-Learning-Course/blob/master/LICENSE).
