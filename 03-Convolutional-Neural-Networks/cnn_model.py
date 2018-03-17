@@ -34,7 +34,7 @@ def fc_layer(inputs, n_units, stddev, decay, scope):
 
 
 class CNN:
-    def __init__(self, images):
+    def __init__(self, images, learning_rate=0.001):
 
         conv1 = conv_layer(images, 5, 64, 0.005, None, 'conv1')
         pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME', name='pool1')
@@ -60,7 +60,7 @@ class CNN:
         cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
         tf.add_to_collection('losses', cross_entropy_mean)
         self.loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
-        self.train_step = tf.train.AdamOptimizer(0.001).minimize(self.loss)
+        self.train_step = tf.train.AdamOptimizer(learning_rate).minimize(self.loss)
 
         correct = tf.equal(tf.argmax(self.preds, axis=1), self.labels)
         self.accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
