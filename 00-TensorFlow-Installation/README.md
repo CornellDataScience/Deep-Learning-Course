@@ -25,8 +25,8 @@ and Download the Python 3.6 version for your operating system.
 **Linux**: In the terminal, run `bash Anaconda*.sh`
     
 Follow the prompts on the installation screen/terminal prompt.
-If at any time you are unsure about settings, just accept the
-defaults (these can always be changed later).  
+**If at any time you are unsure about settings, just accept the
+defaults (these can always be changed later).**  
 Depending on your operating system, you should see something
 similar to one of the following:
 ![Exe](../images/executable.png)
