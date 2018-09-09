@@ -4,6 +4,8 @@ organized by [Cornell Data Science](https://cornelldata.science/).
 No prior knowledge in machine learning or Python is assumed, except for simple matrix algebra and
 basic understanding of coding.
 
+The associated lecture recordings can be found [here](https://www.youtube.com/watch?v=YbYiVAGBAkc&list=PLMiNiGYX5Kv7a65HWioY0S4-qQNKBhfpE).
+
 ## Installation 
 To download all course material, type the following into the command-line:  
 ```bash
