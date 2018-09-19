@@ -89,7 +89,7 @@ material is updated!
 ## Installing TensorFlow
 
 Open a terminal (**Mac/Linux**) or the Anaconda prompt
- (**Windows/Mac**)and type: 
+ (**Windows/Mac**) and type: 
 ```bash
 pip install --ignore-installed --upgrade tensorflow
 ```
