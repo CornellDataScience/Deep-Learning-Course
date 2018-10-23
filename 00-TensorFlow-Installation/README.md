@@ -46,7 +46,7 @@ version control services, and it is where we keep all course material.
 
 **Mac**:   
 * To find out if you already have git installed, open
-a terminal and type `git -- version`. If you see `git version x.x`,
+a terminal and type `git --version`. If you see `git version x.x`,
 then you already have git.  
 1. If you do not already have git, download the latest 
 [Git for Mac installer](https://sourceforge.net/projects/git-osx-installer/files/)
